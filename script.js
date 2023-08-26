@@ -1,14 +1,16 @@
 let fields = [
-    'o', // 0 (Zellennummer)
+    null, // 0 (Zellennummer)
     null, // 1
     null, // 2
-    'x', // 3
+    null, // 3
     null, // 4
     null, // 5
     null, // 6
     null, // 7
     null // 8
 ];
+
+let currentPlayer = 'x';
 
 
 function init() {
@@ -30,7 +32,7 @@ function render() { // Tabelle wird generiert:
             } else if (fields[index] === 'x') {
                 symbol = generateAnimatedCross();
             }
-            table += `<td>${symbol}</td>`; // Hinzufügen des Zellinhalts zur aktuellen Zeile
+            table += `<td onclick="fillCell(this, ${index})">${symbol}</td>`; // Hinzufügen des Zellinhalts zur aktuellen Zeile / this = aktuell geklicktes Zellelement
         }
         // ZEILENINHALT (3 Zellen) ENDE
         table += '</tr>'; // ZEILE ENDE
@@ -38,6 +40,16 @@ function render() { // Tabelle wird generiert:
     table += '</table>'; // TABELLE ENDE
 
     document.getElementById('content').innerHTML = table; // Eben generierter Code wird in die div mit der id 'content' gerendert.
+}
+
+
+function fillCell(cell, index) {
+    if (fields[index] === null) { // Überprüfen, ob das Feld leer ist
+        fields[index] = currentPlayer; // Feld mit dem aktuellen Spieler füllen -> speichert den aktuellen Spielzustand im 'fields'-Array
+        cell.innerHTML = currentPlayer === 'o' ? generateAnimatedCircle() : generateAnimatedCross(); // Zelle wird gefüllt: wenn currentPlayer 'o' dann ...Circle() Funktion, wenn 'x' dann ...Cross() Funktion
+        cell.onclick = null; // onclick-Funktion wird von der aktuellen Zelle wieder entfernt, damit bereits geklicktes Feld nicht nochmal geklickt werden kann
+        currentPlayer = currentPlayer === 'x' ? 'o' : 'x'; // Spielerwechsel -> verkürzte Schreibweise für if/else: "if currentPlayer === x dann (?) 'o', ansonsten (:) 'x'"
+    }
 }
 
 
