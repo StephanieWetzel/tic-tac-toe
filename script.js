@@ -16,7 +16,6 @@ const WINNING_COMBINATIONS = [
     [0, 4, 8], [2, 4, 6], // diagonal
 ];
 
-
 let currentPlayer = 'x';
 
 
@@ -66,10 +65,10 @@ function fillCell(cell, index) {
 
 
 function isGameFinished() {
-    return fields.every((field) => field !== null) || getWinningCombination() !== null;
+    return fields.every((field) => field !== null) || getWinningCombination() !== null; // prüft, ob das Spiel aufgrund eines Unentschieden ODER || eines Sieges vorbei ist
 }
 
-function getWinningCombination() {
+function getWinningCombination() { // überprüft alle möglichen Gewinnmuster - ist eins verfügbar, wird es zurückgegeben; ansonsten null (kein Gewinner)
     for (let i = 0; i < WINNING_COMBINATIONS.length; i++) {
         const [a, b, c] = WINNING_COMBINATIONS[i];
         if (fields[a] === fields[b] && fields[b] === fields[c] && fields[a] !== null) {
@@ -80,30 +79,32 @@ function getWinningCombination() {
 }
 
 
-
 function drawWinningLine(combination) {
-    const lineColor = '#ffffff';
-    const lineWidth = 5;
+    const lineColor = '#ffffff'; // Linienfarbe
+    const lineWidth = 5; // Linienbreite
 
-    const startCell = document.querySelectorAll(`td`)[combination[0]];
-    const endCell = document.querySelectorAll(`td`)[combination[2]];
-    const startRect = startCell.getBoundingClientRect();
-    const endRect = endCell.getBoundingClientRect();
+    const startCell = document.querySelectorAll(`td`)[combination[0]]; // Startzelle
+    const endCell = document.querySelectorAll(`td`)[combination[2]]; // Endzelle
+    const startRect = startCell.getBoundingClientRect(); // getBoundingClientRect() = Javascript Funktion -> holt Größe und Position der Startzelle
+    const endRect = endCell.getBoundingClientRect(); // s. oben -> holt Position der Endzelle
+
+    const contentRect = document.getElementById('content').getBoundingClientRect(); // Größe und Position des kompletten contents wird geholt
 
     const lineLength = Math.sqrt(
-        Math.pow(endRect.left - startRect.left, 2) + Math.pow(endRect.top - startRect.top, 2)
+        Math.pow(endRect.left - startRect.left, 2) + Math.pow(endRect.top - startRect.top, 2) // Linienlänge wird ausgerechnet
     );
-    const lineAngle = Math.atan2(endRect.top - startRect.top, endRect.left - startRect.left);
-
+    const lineAngle = Math.atan2(endRect.top - startRect.top, endRect.left - startRect.left); // Winkel wird ausgerechnet
+    // Linie wird erstellt (auch anhand vorher angelegter Variablen):
     const line = document.createElement('div');
     line.style.position = 'absolute';
     line.style.width = `${lineLength}px`;
     line.style.height = `${lineWidth}px`;
     line.style.backgroundColor = lineColor;
-    line.style.top = `${startRect.top + startRect.height / 2 - lineWidth / 2} px`;
-    line.style.left = `${startRect.left + startRect.width / 2} px`;
-    line.style.transform = `rotate(${lineAngle}rad)`;
-    document.getElementById('content').appendChild(line);
+    line.style.top = `${startRect.top + startRect.height / 2 - lineWidth / 2 - contentRect.top}px`; // y bzw. vertikale Position d. Linie
+    line.style.left = `${startRect.left + startRect.width / 2 - contentRect.left}px`; // x bzw. horizontale Position d. Linie
+    line.style.transform = `rotate(${lineAngle}rad)`; // rotiert die Linie in die richtige Richtung
+    line.style.transformOrigin = `top left`; // damit sagen wir, wo die Linie ihren Ursprung hat bzw. wo sie anfangen soll, zu rotieren (ansonsten wird von der Mitte aus rotiert, was zu einer Fehlstellung führt)
+    document.getElementById('content').appendChild(line); // Linie wird dem Container mit der id 'content' hinzugefügt
 }
 
 
@@ -133,32 +134,4 @@ function generateAnimatedCross() {
         </svg>
     `;
     return svgCode;
-}
-
-
-function checkWin() {
-    for (const pattern of winPatterns) {
-        const [a, b, c] = pattern;
-        if (fields[a] !== null && fields[a] === fields[b] && fields[a] === fields[c]) {
-            return pattern;
-        }
-    }
-    return null;
-}
-
-
-function drawWinLine(winPattern) {
-    const lineSvg = `
-        <svg width="220" height="220" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: -75px; top: -75px;">
-            <line x1="0" y1="0" x2="220" y2="220" stroke="white" stroke-width="4" />
-        </svg>
-    `;
-
-    const contentDiv = document.getElementById('content');
-    contentDiv.insertAdjacentHTML('beforeend', lineSvg);
-
-    for (const i of winPattern) {
-        const cell = document.getElementById(`cell-${i}`);
-        cell.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-    }
 }
