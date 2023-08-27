@@ -67,6 +67,10 @@ function restartGame() {
 
 
 function fillCell(cell, index) {
+    if (isGameFinished()) {
+        return; // Wenn das Spiel vorbei ist (also isGameFinished() = true), bricht die Funktion fillCell() hier ab -> die anderen Felder sind dann nicht mehr anklickbar
+    }
+
     if (fields[index] === null) { // Überprüfen, ob das Feld leer ist
         fields[index] = currentPlayer; // Feld mit dem aktuellen Spieler füllen -> speichert den aktuellen Spielzustand im 'fields'-Array
         cell.innerHTML = currentPlayer === 'o' ? generateAnimatedCircle() : generateAnimatedCross(); // Zelle wird gefüllt: wenn currentPlayer 'o' dann ...Circle() Funktion, wenn 'x' dann ...Cross() Funktion
