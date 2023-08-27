@@ -49,6 +49,23 @@ function render() { // Tabelle wird generiert:
 }
 
 
+function restartGame() {
+    fields = [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    ];
+    currentPlayer = 'x';
+    render();
+}
+
+
 function fillCell(cell, index) {
     if (fields[index] === null) { // Überprüfen, ob das Feld leer ist
         fields[index] = currentPlayer; // Feld mit dem aktuellen Spieler füllen -> speichert den aktuellen Spielzustand im 'fields'-Array
@@ -66,12 +83,17 @@ function fillCell(cell, index) {
 
 function isGameFinished() {
     return fields.every((field) => field !== null) || getWinningCombination() !== null; // prüft, ob das Spiel aufgrund eines Unentschieden ODER || eines Sieges vorbei ist
+    // ((field) => field !== null) / es wird geprüft, ob alle Felder im 'fields'-Array gefüllt sind
 }
 
 function getWinningCombination() { // überprüft alle möglichen Gewinnmuster - ist eins verfügbar, wird es zurückgegeben; ansonsten null (kein Gewinner)
     for (let i = 0; i < WINNING_COMBINATIONS.length; i++) {
-        const [a, b, c] = WINNING_COMBINATIONS[i];
+        const [a, b, c] = WINNING_COMBINATIONS[i]; // a, b, c kann z. B. für 0, 1, 2 aus dem Array stehen
+
         if (fields[a] === fields[b] && fields[b] === fields[c] && fields[a] !== null) {
+            // es wird geprüft, ob in allen Feldern das gleiche (Kreis oder Kreuz oder leer) ist
+            // bei leer: es wird geprüft, ob Feld a NICHT null (!== null) ist -> wenn Feld a null ist, sind folglich auch Felder b und c null und somit sind alle Felder leer -> return null greift dann
+
             return WINNING_COMBINATIONS[i];
         }
     }
